@@ -22,6 +22,7 @@
         .container {
             text-align: center;
             padding: 2rem;
+            max-width: 500px;
         }
         .logo {
             font-size: 4rem;
@@ -49,8 +50,82 @@
             font-size: 0.9rem;
             color: #e94560;
         }
-        .powered-by {
+
+        /* Subscribe section */
+        .subscribe-section {
             margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .subscribe-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .subscribe-section p {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+        .subscribe-form {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .subscribe-form input[type="email"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .subscribe-form input[type="email"]::placeholder {
+            color: #666;
+        }
+        .subscribe-form input[type="email"]:focus {
+            border-color: #e94560;
+        }
+        .subscribe-form button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .subscribe-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
+        }
+        .subscribe-form button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .form-message {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .form-message.success {
+            color: #4ade80;
+        }
+        .form-message.error {
+            color: #f87171;
+        }
+
+        .powered-by {
+            margin-top: 2rem;
             font-size: 0.9rem;
             color: #666;
         }
@@ -69,7 +144,60 @@
         <h1>ClawKanban</h1>
         <p class="tagline">The AI that actually does things. With kanban.</p>
         <span class="badge">Coming Soon</span>
+
+        <div class="subscribe-section">
+            <h2>Stay in the Loop</h2>
+            <p>Get updates on new features and early access. No spam, unsubscribe anytime.</p>
+            <form class="subscribe-form" id="subscribeForm">
+                <input type="email" id="emailInput" placeholder="Enter your email" required>
+                <button type="submit" id="submitBtn">Subscribe</button>
+            </form>
+            <div class="form-message" id="formMessage"></div>
+        </div>
+
         <p class="powered-by">Powered by <a href="https://openclaw.ai" target="_blank">OpenClaw</a></p>
     </div>
+
+    <script>
+        const form = document.getElementById('subscribeForm');
+        const emailInput = document.getElementById('emailInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const formMessage = document.getElementById('formMessage');
+
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoq5i7vMWaIhMtGVx_0on02A7X47cVJbRnsgpogGCgfrZ7Pwz_dqQlcuNVUBTbu4Q7/exec';
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            if (!email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Subscribing...';
+            formMessage.textContent = '';
+            formMessage.className = 'form-message';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                formMessage.textContent = 'Thanks for subscribing!';
+                formMessage.className = 'form-message success';
+                emailInput.value = '';
+            } catch (error) {
+                formMessage.textContent = 'Something went wrong. Please try again.';
+                formMessage.className = 'form-message error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Subscribe';
+            }
+        });
+    </script>
 </body>
 </html>
